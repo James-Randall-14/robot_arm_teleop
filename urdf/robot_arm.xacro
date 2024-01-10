@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="robot_arm">
+
+
+    <!-- Define variables for the robot body -->
+    <xacro:property name="length" value="1" />
+
+    <link name="base_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="${length} ${length} ${length}"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="${length} ${length} ${length}"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <link name="servo_1"></link>
+
+    <joint name="servo_1_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="servo_1"/>
+    </joint>
+
+</robot>
