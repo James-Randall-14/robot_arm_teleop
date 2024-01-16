@@ -3,24 +3,32 @@
 
 
     <!-- Define variables for the robot body -->
-    <xacro:property name="length" value="1" />
+    <xacro:property name="length" value="0" />
 
-    <link name="base_link">
-        <visual>
-            <origin xyz="0 0 0" rpy="0 0 0"/>
-            <geometry>
-                <box size="${length} ${length} ${length}"/>
-            </geometry>
-        </visual>
-        <collision>
-            <origin xyz="0 0 0" rpy="0 0 0"/>
-            <geometry>
-                <box size="${length} ${length} ${length}"/>
-            </geometry>
-        </collision>
-    </link>
 
-    <link name="servo_1"></link>
+    <!-- Define Macros -->
+    <xacro:macro name="servo" params="index">
+        <link name="servo_${index}">
+            <visual>
+                <!--<geometry>
+                    <box size="0.019 0.04 0.04"/>
+                </geometry>-->
+                <!--<mesh filename="file://$(find robot_arm_teleop)/servo.dae"/> -->
+                <mesh filename="file://$(find rov_sim)/rov.dae"/>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <box size="0.019 0.04 0.04"/>
+                </geometry>
+            </collision>
+        </link>
+    </xacro:macro>
+
+    <link name="base_link"></link>
+
+    <xacro:servo index="1">
+    </xacro:servo>
 
     <joint name="servo_1_joint" type="fixed">
         <parent link="base_link"/>
