@@ -7,21 +7,44 @@
   <link name="base_link"/>
   <link name="servo_1">
     <visual>
-      <!--<geometry>
-                    <box size="0.019 0.04 0.04"/>
-                </geometry>-->
-      <!--<mesh filename="file://$(find robot_arm_teleop)/servo.dae"/> -->
-      <mesh filename="file:///home/jhsrobo/armws/install/rov_sim/share/rov_sim/rov.dae"/>
+      <origin rpy="0 0 0" xyz="0 -0.1 0.26"/>
+      <geometry>
+        <mesh filename="file:///home/jhsrobo/armws/install/robot_arm_teleop/share/robot_arm_teleop/servo.stl" scale="0.01 0.01 0.01"/>
+      </geometry>
     </visual>
     <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="0 0 0" xyz="0 0 0.25"/>
       <geometry>
-        <box size="0.019 0.04 0.04"/>
+        <box size="0.19 0.4 0.4"/>
       </geometry>
     </collision>
   </link>
-  <joint name="servo_1_joint" type="fixed">
-    <parent link="base_link"/>
+  <link name="mbracket_1">
+    <visual>
+      <origin rpy="1.57075 0 1.570795" xyz="-0.145 0 0.185"/>
+      <geometry>
+        <mesh filename="file:///home/jhsrobo/armws/install/robot_arm_teleop/share/robot_arm_teleop/mbracket.stl" scale="0.25 0.25 0.25"/>
+      </geometry>
+    </visual>
+  </link>
+  <joint name="mbracket_1_joint" type="fixed">
+    <parent link="mbracket_1"/>
     <child link="servo_1"/>
+  </joint>
+  <link name="ubracket_1">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="file:///home/jhsrobo/armws/install/robot_arm_teleop/share/robot_arm_teleop/ubracket.stl" scale="0.25 0.25 0.25"/>
+      </geometry>
+    </visual>
+  </link>
+  <joint name="root_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="mbracket_1"/>
+  </joint>
+  <joint name="servo_1_u" type="fixed">
+    <parent link="servo_1"/>
+    <child link="ubracket_1"/>
   </joint>
 </robot>
