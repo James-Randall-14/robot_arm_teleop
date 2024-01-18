@@ -2,30 +2,22 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="robot_arm">
 
 
-    <!-- Define variables for the robot body -->
-    <xacro:property name="length" value="0" />
-
-
     <!-- Define Macros -->
+
+    <!-- Servo with MBracket Macro -->
     <xacro:macro name="servo" params="index flipped">
         <link name="servo_${index}">
             <visual>
-                <origin xyz="0 -0.1 0.26" rpy="0 0 0"/>
+                <origin xyz="0 0 0.26" rpy="0 0 0"/>
                 <geometry>
                     <mesh filename="file://$(find robot_arm_teleop)/servo.stl" scale="0.01 0.01 0.01"/>
                 </geometry>
             </visual>
-            <collision>
-                <origin xyz="0 0 0.25" rpy="0 0 0"/>
-                <geometry>
-                    <box size="0.19 0.4 0.4"/>
-                </geometry>
-            </collision>
-        </link>
+        </link> 
 
         <link name="mbracket_${index}">
             <visual>
-                <origin xyz="${-0.145*flipped} 0 0.185" rpy="${3.1415/2} 0 ${(3.14159/2)*flipped}"/>
+                <origin xyz="${-0.145*flipped} 0.1 0.185" rpy="${pi/2} 0 ${(pi/2)*flipped}"/>
                 <geometry>
                     <mesh filename="file://$(find robot_arm_teleop)/mbracket.stl" scale="0.25 0.25 0.25"/>
                 </geometry>
@@ -38,32 +30,70 @@
         </joint>
     </xacro:macro>
 
+    <!-- Ubracket Macro -->
     <xacro:macro name="ubracket" params="index">
         <link name="ubracket_${index}">
             <visual>
-                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <origin xyz="0 -0.52 0.275" rpy="0 ${pi/2} 0"/>
                 <geometry>
-                    <mesh filename="file://$(find robot_arm_teleop)/ubracket.stl" scale="0.25 0.25 0.25"/>
+                    <mesh filename="file://$(find robot_arm_teleop)/ubracket.stl" scale="0.01 0.01 0.01"/>
                 </geometry>
             </visual>
         </link>
     </xacro:macro>
 
+    <!-- Spacer Macro -->
+    <xacro:macro name="spacer" params="index">
+        <link name="spacer_${index}">
+            <visual>
+                <geometry>
+                    <cylinder radius="0.1" length="0.08"/>
+                </geometry>
+            </visual>
+        </link>
+    </xacro:macro>
+
+    <!-- Servo with UBracket -->
+    <xacro:macro name="servo_u" params="index">
+
+        <xacro:servo index="${index}" flipped="1"></xacro:servo>
+
+        <xacro:ubracket index="${index}"></xacro:ubracket>
+
+        <xacro:spacer index="${index}"></xacro:spacer>
+
+        <joint name="servo${index}_u${index}" type="revolute">
+            <axis xyz="0 0 1"/>
+            <limit lower="${-pi/2}" upper="${pi/2}" effort="1000" velocity="${5/3}"/>
+            <parent link="servo_${index}"/>
+            <child link="ubracket_${index}"/>
+            <origin xyz="0 0 -0.08" rpy="0 0 0"/>
+        </joint>
+
+        <joint name="u${index}_spacer${index}" type="fixed">
+            <parent link="ubracket_${index}"/>
+            <child link="spacer_${index}"/>
+            <origin xyz="0 0 0.04" rpy="0 0 0"/>
+        </joint>
+
+    </xacro:macro>
+
 
     <link name="base_link"></link>
-
-    <xacro:servo index="1" flipped="1"></xacro:servo>
-
-    <xacro:ubracket index="1"></xacro:ubracket>
 
     <joint name="root_joint" type="fixed">
         <parent link="base_link"/>
         <child link="mbracket_1"/>
     </joint>
 
-    <joint name="servo_1_u" type="fixed">
-        <parent link="servo_1"/>
-        <child link="ubracket_1"/>
+    <!-- Instantiate a Servo with a UBracket -->
+    <xacro:servo_u index="1"></xacro:servo_u>
+    <xacro:ubracket index="2"></xacro:ubracket>
+
+    <joint name="u1_u2" type="fixed">
+        <parent link="ubracket_1"/>
+        <child link="ubracket_2"/>
+        <origin xyz="0 -1 0" rpy="0 0 ${pi}"/>
     </joint>
 
 </robot>

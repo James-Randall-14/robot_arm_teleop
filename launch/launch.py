@@ -36,14 +36,28 @@ def generate_launch_description():
             default_value=str(rviz_config_path),
             description='Absolute path to rviz config file'), 
 
-        # Package for detailing robot data (Not custom written)
-        # Uses URDF File
         Node(
             package='robot_state_publisher',
             executable='robot_state_publisher',
             name='robot_state_publisher',
             output='screen',
             parameters=[{'use_sim_time': use_sim_time, 'robot_description': robot_desc}],
+            arguments=[urdf]),
+
+        #Node(
+        #    package='joint_state_publisher',
+        #    executable='joint_state_publisher',
+        #    name='joint_state_publisher',
+        #    output='screen',
+        #    parameters=[{'use_sim_time': use_sim_time}],
+        #    arguments=[urdf]),
+
+        Node(
+            package='joint_state_publisher_gui',
+            executable='joint_state_publisher_gui',
+            name='joint_state_publisher_gui',
+            output='screen',
+            parameters=[{'use_sim_time': use_sim_time, 'rate': 20}],
             arguments=[urdf]),
 
         Node(

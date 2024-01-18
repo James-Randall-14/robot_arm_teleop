@@ -4,24 +4,23 @@
 <!-- |    EDITING THIS FILE BY HAND IS NOT RECOMMENDED                                 | -->
 <!-- =================================================================================== -->
 <robot name="robot_arm">
+  <!-- Define Macros -->
   <link name="base_link"/>
+  <joint name="root_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="mbracket_1"/>
+  </joint>
   <link name="servo_1">
     <visual>
-      <origin rpy="0 0 0" xyz="0 -0.1 0.26"/>
+      <origin rpy="0 0 0" xyz="0 0 0.26"/>
       <geometry>
         <mesh filename="file:///home/jhsrobo/armws/install/robot_arm_teleop/share/robot_arm_teleop/servo.stl" scale="0.01 0.01 0.01"/>
       </geometry>
     </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0.25"/>
-      <geometry>
-        <box size="0.19 0.4 0.4"/>
-      </geometry>
-    </collision>
   </link>
   <link name="mbracket_1">
     <visual>
-      <origin rpy="1.57075 0 1.570795" xyz="-0.145 0 0.185"/>
+      <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="-0.145 0.1 0.185"/>
       <geometry>
         <mesh filename="file:///home/jhsrobo/armws/install/robot_arm_teleop/share/robot_arm_teleop/mbracket.stl" scale="0.25 0.25 0.25"/>
       </geometry>
@@ -33,18 +32,42 @@
   </joint>
   <link name="ubracket_1">
     <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="0 1.5707963267948966 0" xyz="0 -0.52 0.275"/>
       <geometry>
-        <mesh filename="file:///home/jhsrobo/armws/install/robot_arm_teleop/share/robot_arm_teleop/ubracket.stl" scale="0.25 0.25 0.25"/>
+        <mesh filename="file:///home/jhsrobo/armws/install/robot_arm_teleop/share/robot_arm_teleop/ubracket.stl" scale="0.01 0.01 0.01"/>
       </geometry>
     </visual>
   </link>
-  <joint name="root_joint" type="fixed">
-    <parent link="base_link"/>
-    <child link="mbracket_1"/>
-  </joint>
-  <joint name="servo_1_u" type="fixed">
+  <link name="spacer_1">
+    <visual>
+      <geometry>
+        <cylinder length="0.08" radius="0.1"/>
+      </geometry>
+    </visual>
+  </link>
+  <joint name="servo1_u1" type="revolute">
+    <axis xyz="0 0 1"/>
+    <limit effort="1000" lower="-1.5707963267948966" upper="1.5707963267948966" velocity="1.6666666666666667"/>
     <parent link="servo_1"/>
     <child link="ubracket_1"/>
+    <origin rpy="0 0 0" xyz="0 0 -0.08"/>
+  </joint>
+  <joint name="u1_spacer1" type="fixed">
+    <parent link="ubracket_1"/>
+    <child link="spacer_1"/>
+    <origin rpy="0 0 0" xyz="0 0 0.04"/>
+  </joint>
+  <link name="ubracket_2">
+    <visual>
+      <origin rpy="0 1.5707963267948966 0" xyz="0 -0.52 0.275"/>
+      <geometry>
+        <mesh filename="file:///home/jhsrobo/armws/install/robot_arm_teleop/share/robot_arm_teleop/ubracket.stl" scale="0.01 0.01 0.01"/>
+      </geometry>
+    </visual>
+  </link>
+  <joint name="u1_u2" type="fixed">
+    <parent link="ubracket_1"/>
+    <child link="ubracket_2"/>
+    <origin rpy="0 0 3.141592653589793" xyz="0 -1 0"/>
   </joint>
 </robot>
