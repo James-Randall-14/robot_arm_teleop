@@ -4,8 +4,10 @@
 
     <!-- Define Macros -->
 
-    <!-- Servo with MBracket Macro -->
-    <xacro:macro name="servo" params="index flipped">
+
+
+    <!-- Servo Macro -->
+    <xacro:macro name="servo" params="index">
         <link name="servo_${index}">
             <visual>
                 <origin xyz="0 0 0.26" rpy="0 0 0"/>
@@ -15,6 +17,10 @@
             </visual>
         </link> 
 
+    </xacro:macro>
+
+    <!-- MBracket Macro -->
+    <xacro:macro name="mbracket" params="index flipped">
         <link name="mbracket_${index}">
             <visual>
                 <origin xyz="${-0.145*flipped} 0.1 0.185" rpy="${pi/2} 0 ${(pi/2)*flipped}"/>
@@ -23,11 +29,6 @@
                 </geometry>
             </visual>
         </link>
-
-        <joint name="mbracket_${index}_joint" type="fixed">
-            <parent link="mbracket_${index}"/>
-            <child link="servo_${index}"/>
-        </joint>
     </xacro:macro>
 
     <!-- Ubracket Macro -->
@@ -53,47 +54,163 @@
         </link>
     </xacro:macro>
 
-    <!-- Servo with UBracket -->
-    <xacro:macro name="servo_u" params="index">
-
-        <xacro:servo index="${index}" flipped="1"></xacro:servo>
-
-        <xacro:ubracket index="${index}"></xacro:ubracket>
-
-        <xacro:spacer index="${index}"></xacro:spacer>
-
-        <joint name="servo${index}_u${index}" type="revolute">
-            <axis xyz="0 0 1"/>
-            <limit lower="${-pi/2}" upper="${pi/2}" effort="1000" velocity="${5/3}"/>
-            <parent link="servo_${index}"/>
-            <child link="ubracket_${index}"/>
-            <origin xyz="0 0 -0.08" rpy="0 0 0"/>
-        </joint>
-
-        <joint name="u${index}_spacer${index}" type="fixed">
-            <parent link="ubracket_${index}"/>
-            <child link="spacer_${index}"/>
-            <origin xyz="0 0 0.04" rpy="0 0 0"/>
-        </joint>
-
-    </xacro:macro>
-
-
     <link name="base_link"></link>
 
     <joint name="root_joint" type="fixed">
         <parent link="base_link"/>
+        <child link="servo_1"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- Instantiate Servo 1 and connect to MBracket -->
+    <xacro:servo index="1"></xacro:servo>
+
+    <xacro:mbracket index="1" flipped="1"></xacro:mbracket>
+
+    <joint name="mbracket1_servo1" type="fixed">
+        <parent link="servo_1"/>
         <child link="mbracket_1"/>
     </joint>
 
-    <!-- Instantiate a Servo with a UBracket -->
-    <xacro:servo_u index="1"></xacro:servo_u>
+    <joint name="joint_1" type="revolute">
+        <limit lower="${-pi/2}" upper="${pi/2}" effort="1000" velocity="${5/3}"/>
+        <axis xyz="0 0 1"/>
+        <parent link="servo_1"/>
+        <child link="offset_2"/>
+        <origin xyz="0 0 0" rpy="0 0 ${pi/2}"/>
+    </joint>
+
+    <!-- Instantiate a Servo 2 with an MBracket and UBracket -->
+    <xacro:servo index="2"></xacro:servo>
+
+    <xacro:mbracket index="2" flipped="1"></xacro:mbracket>
+
+    <joint name="mbracket2_servo2" type="fixed">
+        <child link="servo_2"/>
+        <parent link="mbracket_2"/>
+    </joint>
+
+
     <xacro:ubracket index="2"></xacro:ubracket>
 
-    <joint name="u1_u2" type="fixed">
-        <parent link="ubracket_1"/>
+    <xacro:spacer index="2"></xacro:spacer>
+
+    <joint name="joint_2" type="revolute">
+        <axis xyz="0 0 1"/>
+        <limit lower="${-pi/2}" upper="${pi/2}" effort="1000" velocity="${5/3}"/>
+        <parent link="servo_2"/>
         <child link="ubracket_2"/>
+        <origin xyz="0 0 -0.08" rpy="0 0 ${pi/2}"/>
+    </joint>
+
+    <joint name="u2_spacer2" type="fixed">
+        <parent link="ubracket_2"/>
+        <child link="spacer_2"/>
+        <origin xyz="0 0 0.04" rpy="0 0 0"/>
+    </joint>
+
+    <!-- Connect Servo 1 to servo 2 (Requires dummy offset link) -->
+    <link name="offset_2"></link>
+
+    <joint name="offset2_m2" type="fixed">
+        <parent link="offset_2"/>
+        <child link="mbracket_2"/>
+        <origin xyz="0.225 0 0.59" rpy="0 ${-pi/2} 0"/>
+    </joint>
+    
+    <!-- Instantiate a second UBracket, associated with third servo -->
+    <xacro:ubracket index="3"></xacro:ubracket>
+
+    <joint name="u2_u3" type="fixed">
+        <parent link="ubracket_2"/>
+        <child link="ubracket_3"/>
         <origin xyz="0 -1 0" rpy="0 0 ${pi}"/>
     </joint>
+
+    <!-- Create that third servo and attach to ubracket -->
+    <xacro:servo index="3"></xacro:servo>
+
+    <xacro:mbracket index="3" flipped="-1"></xacro:mbracket>
+
+    <xacro:spacer index="3"></xacro:spacer>
+
+    <joint name="mbracket3_servo3" type="fixed">
+        <parent link="servo_3"/>
+        <child link="mbracket_3"/>
+    </joint>
+
+    <joint name="joint_3" type="revolute">
+        <axis xyz="0 0 1"/>
+        <limit lower="${-pi/2}" upper="${pi/2}" effort="1000" velocity="${5/3}"/>
+        <child link="servo_3"/>
+        <parent link="ubracket_3"/>
+        <origin xyz="0 0 0.08" rpy="0 0 ${pi/2}"/>
+    </joint>
+
+    <joint name="u3_spacer3" type="fixed">
+        <parent link="ubracket_3"/>
+        <child link="spacer_3"/>
+        <origin xyz="0 0 0.04" rpy="0 0 0"/>
+    </joint>
+
+    <!-- Servo 4 -->
+    <xacro:servo index="4"></xacro:servo>
+
+    <xacro:mbracket index="4" flipped="-1"></xacro:mbracket>
+
+    <joint name="servo3_m4" type="fixed">
+        <parent link="servo_3"/>
+        <child link="mbracket_4"/>
+        <origin xyz="0.15 0 0.19" rpy="0 ${pi/2} 0"/>
+    </joint>
+
+    <joint name="mbracket4_servo4" type="fixed">
+        <parent link="mbracket_4"/>
+        <child link="servo_4"/>
+    </joint>
+
+    <!-- Servo 5 -->
+    <xacro:servo index="5"></xacro:servo>
+
+    <xacro:mbracket index="5" flipped="-1"></xacro:mbracket> 
+
+    <link name="offset_5"></link>
+
+    <joint name="offset5_m5" type="fixed">
+        <parent link="offset_5"/>
+        <child link="mbracket_5"/>
+        <origin xyz="-0.59 0 -0.225" rpy="0 0 0"/>
+    </joint>   
+
+    <joint name="mbracket5_servo5" type="fixed">
+        <parent link="mbracket_5"/>
+        <child link="servo_5"/>
+    </joint>
+
+    <joint name="joint_4" type="revolute">
+        <limit lower="${-pi/2}" upper="${pi/2}" effort="1000" velocity="${5/3}"/>
+        <axis xyz="1 0 0"/>
+        <parent link="servo_4"/>
+        <child link="offset_5"/>
+        <origin xyz="0 0 0" rpy="0 ${pi/2} ${-pi/2}"/>
+    </joint>
+
+    <!-- Gripper Standin -->
+    <link name="gripper">
+        <visual>
+            <geometry>
+                <box size="0.4 0.4 0.4"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <joint name="joint_5" type="revolute">
+        <limit lower="${-pi/2}" upper="${pi/2}" effort="1000" velocity="${5/3}"/>
+        <axis xyz="0 0 1"/>
+        <parent link="servo_5"/>
+        <child link="gripper"/>
+        <origin xyz="0 0 0.65" rpy="0 0 0"/>
+    </joint>
+    
 
 </robot>
